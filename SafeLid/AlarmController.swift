@@ -119,7 +119,7 @@ enum SystemVolumeController {
             mScope: kAudioDevicePropertyScopeOutput,
             mElement: kAudioObjectPropertyElementMain
         )
-        let size = UInt32(MemoryLayout<Float32>.size)
+        var size = UInt32(MemoryLayout<Float32>.size)
         let status = AudioObjectGetPropertyData(deviceID, &address, 0, nil, &size, &volume)
         return status == noErr ? max(0, min(1, volume)) : 1.0
     }
