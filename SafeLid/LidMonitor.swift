@@ -73,11 +73,11 @@ final class LidMonitor {
             "AppleClamshellState" as CFString,
             kCFAllocatorDefault,
             0
-        )?.takeRetainedValue() as? CFBoolean else {
+        )?.takeRetainedValue() else {
             return false
         }
 
-        return value.boolValue
+        return CFBooleanGetValue(value as! CFBoolean)
     }
 }
 #endif

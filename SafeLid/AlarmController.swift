@@ -86,7 +86,7 @@ enum AlarmToneFactory {
             let intSample = Int16(clamped * Double(Int16.max))
 
             var littleEndian = intSample.littleEndian
-            withUnsafeBytes(of: &littleEndian) { pcm.append(contentsOf: $0) }
+            Swift.withUnsafeBytes(of: &littleEndian) { pcm.append(contentsOf: $0) }
         }
 
         var wav = Data()
@@ -115,11 +115,11 @@ enum SystemVolumeController {
 
         var volume = Float32(1.0)
         var address = AudioObjectPropertyAddress(
-            mSelector: kAudioHardwareServiceDeviceProperty_VirtualMasterVolume,
+            mSelector: kAudioHardwareServiceDeviceProperty_VirtualMainVolume,
             mScope: kAudioDevicePropertyScopeOutput,
             mElement: kAudioObjectPropertyElementMain
         )
-        var size = UInt32(MemoryLayout<Float32>.size)
+        let size = UInt32(MemoryLayout<Float32>.size)
         let status = AudioObjectGetPropertyData(deviceID, &address, 0, nil, &size, &volume)
         return status == noErr ? max(0, min(1, volume)) : 1.0
     }
@@ -134,11 +134,11 @@ enum SystemVolumeController {
 
         var volume = Float32(clamped)
         var address = AudioObjectPropertyAddress(
-            mSelector: kAudioHardwareServiceDeviceProperty_VirtualMasterVolume,
+            mSelector: kAudioHardwareServiceDeviceProperty_VirtualMainVolume,
             mScope: kAudioDevicePropertyScopeOutput,
             mElement: kAudioObjectPropertyElementMain
         )
-        var size = UInt32(MemoryLayout<Float32>.size)
+        let size = UInt32(MemoryLayout<Float32>.size)
         let status = AudioObjectSetPropertyData(deviceID, &address, 0, nil, size, &volume)
 
         if status != noErr {
@@ -185,12 +185,12 @@ private extension Data {
 
     mutating func appendUInt16LE(_ value: UInt16) {
         var littleEndian = value.littleEndian
-        withUnsafeBytes(of: &littleEndian) { append(contentsOf: $0) }
+        Swift.withUnsafeBytes(of: &littleEndian) { append(contentsOf: $0) }
     }
 
     mutating func appendUInt32LE(_ value: UInt32) {
         var littleEndian = value.littleEndian
-        withUnsafeBytes(of: &littleEndian) { append(contentsOf: $0) }
+        Swift.withUnsafeBytes(of: &littleEndian) { append(contentsOf: $0) }
     }
 }
 #endif
