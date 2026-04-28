@@ -1,0 +1,46 @@
+name: Build DMG
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build-dmg:
+    runs-on: macos-14
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build executable
+        run: swift build -c release
+
+      - name: Package app bundle
+        run: |
+          set -euo pipefail
+
+          APP_NAME="SafeLid"
+          BUILD_DIR=".build/release"
+          DIST_DIR="dist"
+          APP_BUNDLE="$DIST_DIR/$APP_NAME.app"
+
+          rm -rf "$DIST_DIR"
+          mkdir -p "$APP_BUNDLE/Contents/MacOS"
+
+          cp "SafeLid/Info.plist" "$APP_BUNDLE/Contents/Info.plist"
+          cp "$BUILD_DIR/$APP_NAME" "$APP_BUNDLE/Contents/MacOS/$APP_NAME"
+          chmod +x "$APP_BUNDLE/Contents/MacOS/$APP_NAME"
+
+          codesign --force --deep --sign - "$APP_BUNDLE"
+
+      - name: Build DMG
+        run: bash ./scripts/build-dmg.sh --app dist/SafeLid.app --output dist/SafeLid.dmg
+
+      - name: Upload DMG artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: SafeLid-dmg
+          path: dist/SafeLid.dmg
