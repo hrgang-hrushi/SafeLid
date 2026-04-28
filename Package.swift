@@ -13,7 +13,8 @@ let package = Package(
     targets: [
         .executableTarget(
             name: "SafeLid",
-            path: "SafeLid"
+            path: "SafeLid",
+            exclude: ["Info.plist"]
         )
     ]
 )
